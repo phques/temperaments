@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.808.4
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EDOgen", "EDOgen\EDOgen.csproj", "{119034E6-1878-4160-81AB-B16320EB1074}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScaleLib", "ScaleLib\ScaleLib.csproj", "{4B9CA30C-21CD-4841-909E-76F490277CD8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarlosScales", "CarlosScales\CarlosScales.csproj", "{65FB040C-DA0F-44E6-805E-ADE4F50D8F23}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|anycpu = Debug|anycpu
+		Release|anycpu = Release|anycpu
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{119034E6-1878-4160-81AB-B16320EB1074}.Debug|anycpu.ActiveCfg = Debug|Any CPU
+		{119034E6-1878-4160-81AB-B16320EB1074}.Debug|anycpu.Build.0 = Debug|Any CPU
+		{119034E6-1878-4160-81AB-B16320EB1074}.Release|anycpu.ActiveCfg = Release|Any CPU
+		{119034E6-1878-4160-81AB-B16320EB1074}.Release|anycpu.Build.0 = Release|Any CPU
+		{4B9CA30C-21CD-4841-909E-76F490277CD8}.Debug|anycpu.ActiveCfg = Debug|Any CPU
+		{4B9CA30C-21CD-4841-909E-76F490277CD8}.Debug|anycpu.Build.0 = Debug|Any CPU
+		{4B9CA30C-21CD-4841-909E-76F490277CD8}.Release|anycpu.ActiveCfg = Release|Any CPU
+		{4B9CA30C-21CD-4841-909E-76F490277CD8}.Release|anycpu.Build.0 = Release|Any CPU
+		{65FB040C-DA0F-44E6-805E-ADE4F50D8F23}.Debug|anycpu.ActiveCfg = Debug|Any CPU
+		{65FB040C-DA0F-44E6-805E-ADE4F50D8F23}.Debug|anycpu.Build.0 = Debug|Any CPU
+		{65FB040C-DA0F-44E6-805E-ADE4F50D8F23}.Release|anycpu.ActiveCfg = Release|Any CPU
+		{65FB040C-DA0F-44E6-805E-ADE4F50D8F23}.Release|anycpu.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {636A7859-F6F4-4B6A-A39D-D63C7DD7DCE3}
+	EndGlobalSection
+EndGlobal
