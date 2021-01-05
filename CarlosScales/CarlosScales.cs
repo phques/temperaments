@@ -34,15 +34,22 @@ namespace CarlosScales
         // alpha=(9,5,4), beta=(11,6,5), gamma=(20,11,9)
         public Carlos(int nb5Ths, int nbMaj3Thds, int nbMin3Thds, int nbSteps) : base(nbSteps)
         {
+            CalcCents(nb5Ths, nbMaj3Thds, nbMin3Thds);
+            Name = "Wendy Carlos scale";
+        }
+
+        protected void CalcCents(int nb5Ths, int nbMaj3Thds, int nbMin3Thds)
+        {
             double a = (
                 nb5Ths * Math.Log(3.0 / 2, 2) +
                 nbMaj3Thds * Math.Log(5.0 / 4, 2) +
                 nbMin3Thds * Math.Log(6.0 / 5, 2));
+
             double b = (nb5Ths * nb5Ths) + (nbMaj3Thds * nbMaj3Thds) + (nbMin3Thds * nbMin3Thds);
 
             stepCents = 1200 * (a / b);
-            Name = "Wendy Carlos scale";
         }
+
 
         public override void Generate()
         {
@@ -80,6 +87,84 @@ namespace CarlosScales
         }
     }
 
+    // is this one Carlos ?
+    // wikipedia speaks of "The Bohlen–Pierce delta scale is based on the tritave"
+    class Delta : Carlos
+    {
+        public Delta() : base(50, 28,31, 91+2) //
+        {
+            Name = "Wendy Carlos scale Delta";
+        }
+    }
+
+    // trying out my own ;-)
+    class Pq53EDO : Carlos
+    {
+        // 53 is 1200.27 !! 0.27 sharp of P8 !
+        // This ends up being *almost* exactly 53-EDO !!
+        // 
+        public Pq53EDO() : base(31, 17, 14, 53+2) 
+        {
+            Name = "Wendy Carlos scale Pq53EDO";
+        }
+    }
+
+    // trying out my own ;-)
+    class Pq41EDO : Carlos
+    {
+        // 41 is 1199.75 !! 0.25 flat P8 !
+        // This ends up being *almost* exactly 41-EDO !!
+        // 
+        public Pq41EDO() : base(24, 13, 11, 41 + 2)
+        {
+            Name = "Wendy Carlos scale Pq41EDO";
+        }
+    }
+
+    // trying out my own ;-)
+    class Pq65EDO : Carlos
+    {
+        // 65 is 1200.52 !! 0.52 sharp P8 !
+        // This ends up being *almost* exactly 65-EDO !!
+        // note that 65edo is close to 53edo
+        // 
+        public Pq65EDO() : base(38, 21, 17, 65+2)
+        {
+            Name = "Wendy Carlos scale Pq65EDO";
+        }
+    }
+
+    // trying out my own ;-)
+    class Pq2 : Carlos
+    {
+        public Pq2() : base(29, 16, 13, 100)
+        {
+            Name = "Wendy Carlos scale Pq2";
+        }
+
+        public override void Generate()
+        {
+            double f1 = 17.0 / 62 * 2;
+            double f2 = 14.0 / 62 * 2;
+            //double f1 = 11.0 / 20.0;
+            //double f2 = 9.0 / 20;
+
+            for (int i = 38; i <= 45; i++)
+            {
+                int n1 = i;
+                int n2 = (int)Math.Round(i*f1);
+                int n3 = (int)Math.Round(i*f2);
+                CalcCents(n1, n2, n3);
+                base.Generate();
+                PlaceRatios();
+
+                Console.WriteLine("{0} {1} {2}", n1,n2,n3);
+                Show();
+            }
+            
+        }
+    }
+
     class Program
     {
         static void Main(string[] args)
@@ -100,17 +185,39 @@ namespace CarlosScales
                 {
                     carlos = new Gamma();
                 }
+                else if (args[0] == "d")
+                {
+                    carlos = new Delta();
+                }
+                else if (args[0] == "pq41")
+                {
+                    carlos = new Pq41EDO();
+                }
+                else if (args[0] == "pq53")
+                {
+                    carlos = new Pq53EDO();
+                }
+                else if (args[0] == "pq65")
+                {
+                    carlos = new Pq65EDO();
+                }
+                else if (args[0] == "q")
+                {
+                    carlos = new Pq2();
+                    carlos.Generate();
+                    return;
+                }
             }
             if (carlos != null)
             {
-                Console.WriteLine("GEnerating {0}", carlos.Name);
+                //Console.WriteLine("Generating {0}", carlos.Name);
                 carlos.Generate();
                 carlos.PlaceRatios();
                 carlos.Show();
             }
             else
             {
-                Console.WriteLine("Wendy Carlos scale generator, parameter: a | b | g");
+                Console.WriteLine("Wendy Carlos scale generator, parameter: a | b | g | d | pq41 | pq53");
             }
         }
     }

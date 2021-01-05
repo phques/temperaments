@@ -57,7 +57,7 @@ namespace EDOgen
             }
 
 
-            Console.WriteLine("generating EDO {0} @ C4", nbSteps);
+            //Console.WriteLine("generating EDO {0} @ C4", nbSteps);
 
             const double C4 = 248.30;
             EDO edo = new EDO(nbSteps, C4);
