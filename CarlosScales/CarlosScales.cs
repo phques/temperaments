@@ -273,7 +273,7 @@ namespace CarlosScales
             }
             else
             {
-                Console.WriteLine("Wendy Carlos scale generator, parameter: a | b | g | d | pq41 | pq53");
+                Console.WriteLine("Wendy Carlos scale generator, parameter: a | b | g | d | pq41 | pq53 | pq65");
             }
         }
     }
