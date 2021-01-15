@@ -25,13 +25,25 @@ namespace ScaleLib
         private readonly int n2;
         private readonly double cents;
         private readonly string interval;
+        private readonly string note;
 
-        public IntervalRatio(int n1, int n2, string interval)
+        public IntervalRatio(int n1, int n2, string interval, string note)
         {
             this.n1 = n1;
             this.n2 = n2;
             this.interval = interval;
-            this.cents = 1200 * Math.Log((double)n1 / n2, 2);
+            this.note = note;
+            this.cents = CentsFromRatio(n1, n2);
+        }
+
+        static public double CentsFromRatio(double n1, double n2)
+        {
+            return CentsFromRatio(n1 / n2);
+        }
+
+        static public double CentsFromRatio(double ratio)
+        {
+            return 1200 * Math.Log(ratio, 2);
         }
 
         override public string ToString()
@@ -40,8 +52,8 @@ namespace ScaleLib
         }
 
         public double Cents => cents;
-
         public string Interval => interval;
+        public string Note => note;
     }
 
     //--------------------------
@@ -64,9 +76,9 @@ namespace ScaleLib
 
         public double Freq => freq;
 
-        internal IntervalRatio Ratio { get; set; }
+        public IntervalRatio Ratio { get; set; }
 
-        internal double DiffJust
+        public double DiffJust
         {
             get
             {
@@ -85,7 +97,7 @@ namespace ScaleLib
     {
         protected int nbSteps;
         protected ScaleStep[] scaleSteps;
-        protected List<IntervalRatio> intervalRatios;
+        protected List<IntervalRatio> refIntervalRatios;
         protected readonly string[] keyboardNotes = {
             "C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B"
         };
@@ -95,23 +107,23 @@ namespace ScaleLib
             this.nbSteps = nbSteps;
             this.scaleSteps = new ScaleStep[nbSteps + 1];
 
-            this.intervalRatios = new List<IntervalRatio>
+            this.refIntervalRatios = new List<IntervalRatio>
             {
-                new IntervalRatio(16, 15, "m2"),
-                new IntervalRatio(9, 8, "M2"),
-                new IntervalRatio(6, 5, "m3"),
-                new IntervalRatio(5, 4, "M3"),
-                new IntervalRatio(4, 3, "P4"),
-                new IntervalRatio(11, 8, "11HTT"),
-                new IntervalRatio(7, 5, "l7TT"),
-                new IntervalRatio(10, 7, "g7TT"),
-                new IntervalRatio(3, 2, "P5"),
-                new IntervalRatio(8, 5, "m6"),
-                new IntervalRatio(5, 3, "M6"),
-                new IntervalRatio(7, 4, "H7"),
-                new IntervalRatio(9, 5, "m7"),
-                new IntervalRatio(15, 8, "M7"),
-                new IntervalRatio(2, 1, "P8"),
+                new IntervalRatio(16, 15, "m2", "Db"),
+                new IntervalRatio(9, 8, "M2", "D"),
+                new IntervalRatio(6, 5, "m3", "Eb"),
+                new IntervalRatio(5, 4, "M3", "E"),
+                new IntervalRatio(4, 3, "P4", "F"),
+                new IntervalRatio(11, 8, "11HTT", ""),
+                new IntervalRatio(7, 5, "l7TT", ""),
+                new IntervalRatio(10, 7, "g7TT", ""),
+                new IntervalRatio(3, 2, "P5", "G"),
+                new IntervalRatio(8, 5, "m6", "Ab"),
+                new IntervalRatio(5, 3, "M6", "A"),
+                new IntervalRatio(7, 4, "H7", "Bbb"),
+                new IntervalRatio(9, 5, "m7", "Bb"),
+                new IntervalRatio(15, 8, "M7", "B"),
+                new IntervalRatio(2, 1, "P8", "C"),
             };
         }
 
@@ -119,7 +131,10 @@ namespace ScaleLib
 
         public void PlaceRatios()
         {
-            List<IntervalRatio> toPlace = new List<IntervalRatio>(intervalRatios);
+            List<IntervalRatio> toPlace = new List<IntervalRatio>(refIntervalRatios);
+
+            // always place C on 1st entry, idx = 0
+            scaleSteps[0].Ratio = new IntervalRatio(1, 1, "P1", "C");
 
             while (toPlace.Count > 0)
             {
@@ -202,68 +217,13 @@ namespace ScaleLib
             }
         }
 
-        //## not good
-        public void __PlaceRatio__(IntervalRatio newRatio)
+
+        public virtual void Show()
         {
-            List<IntervalRatio> todo = new List<IntervalRatio>
-            {
-                newRatio
-            };
+            Console.WriteLine("Steps\tNote\tCents\t-- Just\tratio\tcents\terror --\tFrequency\tKbd note");
 
-            while (todo.Count > 0)
-            {
-                IntervalRatio ratio = todo[0];
-                todo.RemoveAt(0);
-
-                ScaleStep scaleStepPlaced = null;
-                double centsDiffPlaced = 0;
-
-                foreach (var scaleStep in scaleSteps)
-                {
-                    // check if good place to put this ratio
-                    double centsDiff = Math.Abs(scaleStep.Cents - ratio.Cents);
-
-                    // potential place for this ratio
-                    if (centsDiff < centsDiffPlaced || scaleStepPlaced == null)
-                    {
-                        // empty slot or we have a better score than ratio already there
-                        if (scaleStep.Ratio == null || centsDiff < Math.Abs(scaleStep.DiffJust))
-                        {
-                            // debug
-                            //Console.WriteLine("Placing {0} at {1}", ratio, i);
-
-                            scaleStepPlaced = scaleStep;
-                            centsDiffPlaced = centsDiff;
-
-                            if (scaleStep.Ratio != null)
-                            {
-                                //Console.WriteLine("existing ratio {0} will need to be placed again", ratio);
-                                todo.Add(scaleStep.Ratio);
-                            }
-                        }
-                    }
-                }
-
-                if (scaleStepPlaced != null)
-                {
-                    scaleStepPlaced.Ratio = ratio;
-                }
-                else
-                {
-                    //Console.WriteLine("ratio {0} could not be placed", ratio);
-                }
-            }
-        }
-        public void __PlaceRatio__(int n1, int n2, string interval)
-        {
-            __PlaceRatio__(new IntervalRatio(n1, n2, interval));
-        }
-
-        public void Show()
-        {
-            Console.WriteLine("Steps\tCents\t-- Just\tratio\tcents\terror --\tFrequency\tKbd note");
-
-            for (int i = 0; i < scaleSteps.Length; i++)
+            //for (int i = 0; i < scaleSteps.Length; i++)
+            for (int i = scaleSteps.Length-1; i >= 0; i--)
             {
                 var step = scaleSteps[i];
 
@@ -272,6 +232,12 @@ namespace ScaleLib
                 string kbdKey = keyboardNotes[kbdKeyIdx];
 
                 Console.Write("{0:D}\t", step.Index);
+
+                if (step.Ratio != null)
+                    Console.Write("{0}\t", step.Ratio.Note);
+                else
+                    Console.Write("\t");
+
                 Console.Write("{0,7:F2}\t", step.Cents);
 
                 if (step.Ratio != null)

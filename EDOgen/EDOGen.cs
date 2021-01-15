@@ -40,7 +40,7 @@ namespace EDOgen
                 double freq = refFrequency * Math.Pow(a, i);
                 double cents = 1200.0 / nbSteps * i;
 
-                scaleSteps[i] = new ScaleStep(i, cents, freq);
+                    scaleSteps[i] = new ScaleStep(i, cents, freq);
             }
         }
 

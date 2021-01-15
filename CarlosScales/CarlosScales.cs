@@ -158,12 +158,60 @@ namespace CarlosScales
                 base.Generate();
                 PlaceRatios();
 
-                Console.WriteLine("{0} {1} {2}", n1,n2,n3);
-                Show();
             }
             
         }
     }
+
+    class Gamma3va : Carlos
+    {
+        public Gamma3va() : base(20, 11, 9, 34*3-1) // 34.1895 per octave.
+        {
+            Name = "Wendy Carlos scale Gamma3va";
+        }
+
+        public override void Generate()
+        {
+            for (int j = 0; j < 3; j++)
+            {
+                for (int i = 0; i < 34; i++)
+                {
+                    scaleSteps[i+34*j] = new ScaleStep(i + 34 * j, stepCents * i + 1200*j, 0); // no frequency
+                }
+            }  
+        }
+
+        public override void Show()
+        {
+            Console.WriteLine("Steps\tCents\t-- Just\tratio\tcents\terror --");
+
+            for (int i = 0; i < scaleSteps.Length; i++)
+            {
+                var step = scaleSteps[i];
+
+                //if (step != null)
+                {
+                    Console.Write("{0:D}\t", step.Index);
+                    Console.Write("{0,7:F2}\t", step.Cents);
+
+                    if (step.Ratio != null)
+                    {
+                        Console.Write("{0}\t", step.Ratio.Interval);
+                        Console.Write("{0}\t", step.Ratio);
+                        Console.Write("{0:F2}\t", step.Ratio.Cents);
+                        Console.Write("{0:F2}\t", step.DiffJust);
+                    }
+                    else
+                    {
+                        Console.Write("\t\t\t\t");
+                    }
+
+                    Console.WriteLine("");
+                }
+            }
+        }
+    }
+
 
     class Program
     {
@@ -205,6 +253,14 @@ namespace CarlosScales
                 {
                     carlos = new Pq2();
                     carlos.Generate();
+                    return;
+                }
+                else if (args[0] == "g3va")
+                {
+                    carlos = new Gamma3va();
+                    carlos.Generate();
+                    carlos.PlaceRatios();
+                    carlos.Show();
                     return;
                 }
             }
