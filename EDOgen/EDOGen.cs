@@ -50,6 +50,33 @@ namespace EDOgen
     {
         static void Main(string[] args)
         {
+            const double C4 = 248.30;
+
+            //## test debug
+#if false 
+            EDO edot = new EDO(12, C4);
+            edot.Generate();
+            edot.PlaceRatios();
+            edot.CreateScaleNotes();
+
+            edot = new EDO(19, C4);
+            edot.Generate();
+            edot.PlaceRatios();
+            edot.CreateScaleNotes();
+
+            edot = new EDO(31, C4);
+            edot.Generate();
+            edot.PlaceRatios();
+            edot.CreateScaleNotes();
+
+            edot = new EDO(41, C4);
+            edot.Generate();
+            edot.PlaceRatios();
+            edot.CreateScaleNotes();
+
+            return;
+#endif
+
             if (args.Length != 1 || !int.TryParse(args[0], out int nbSteps))
             {
                 Console.WriteLine("paramter: nbr of steps of the EDO scale to generate");
@@ -59,11 +86,11 @@ namespace EDOgen
 
             //Console.WriteLine("generating EDO {0} @ C4", nbSteps);
 
-            const double C4 = 248.30;
             EDO edo = new EDO(nbSteps, C4);
 
             edo.Generate();
             edo.PlaceRatios();
+            edo.CreateScaleNotes();
             edo.Show();
         }
     }

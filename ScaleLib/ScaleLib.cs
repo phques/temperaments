@@ -77,6 +77,7 @@ namespace ScaleLib
         public double Freq => freq;
 
         public IntervalRatio Ratio { get; set; }
+        public string ScaleNote { get; set; }
 
         public double DiffJust
         {
@@ -220,6 +221,7 @@ namespace ScaleLib
 
         public virtual void Show()
         {
+            
             Console.WriteLine("Steps\tNote\tCents\t-- Just\tratio\tcents\terror --\tFrequency\tKbd note");
 
             //for (int i = 0; i < scaleSteps.Length; i++)
@@ -233,10 +235,15 @@ namespace ScaleLib
 
                 Console.Write("{0:D}\t", step.Index);
 
-                if (step.Ratio != null)
-                    Console.Write("{0}\t", step.Ratio.Note);
+                if (step.ScaleNote != null) // not all scales have this
+                    Console.Write("{0}\t", step.ScaleNote);
                 else
-                    Console.Write("\t");
+                {
+                    if (step.Ratio != null)
+                        Console.Write("{0}\t", step.Ratio.Note);
+                    else
+                        Console.Write("\t");
+                }
 
                 Console.Write("{0,7:F2}\t", step.Cents);
 
@@ -259,6 +266,76 @@ namespace ScaleLib
 
                 Console.WriteLine("");
             }
+        }
+
+        // This is designed for EDO scales .. might not be right for others
+        public void CreateScaleNotes()
+        {
+            if (nbSteps < 12)
+                return;
+
+            int idxScaleStep = 0;
+            while (scaleSteps[idxScaleStep] != null)
+            {
+                if (scaleSteps[idxScaleStep]?.Ratio?.Interval == "M2")
+                    break;
+                idxScaleStep++;
+            }
+            if (scaleSteps[idxScaleStep] == null)
+                return;
+
+            int toneSteps = idxScaleStep;
+            int htoneSteps = ((nbSteps - toneSteps * 5) / 2);
+
+            string[] notes = { "C", "D", "E", "F", "G", "A", "B", "C" };
+            int[] isTones = { 1, 1, 0, 1, 1, 1, 0 };
+
+            idxScaleStep = 0;
+
+            for (int i = 0; i < notes.Length-1; i++)
+            {
+                string note = notes[i];
+                string nextNote = notes[i + 1];
+                bool isTone = (isTones[i] == 1);
+                int nbSteps = (isTone ? toneSteps : htoneSteps);
+
+                int nbSharps = (nbSteps - 1) / 2;
+                int nbFlats = (nbSteps - 1) / 2;
+                bool needsPair = ((nbSteps - 1) % 2) == 1;
+
+                // sharps
+                for (int sharps = 0; sharps <= nbSharps; sharps++)
+                {
+                    string n = string.Format("{0}{1} ", note, new string('#', sharps));
+
+                    scaleSteps[idxScaleStep++].ScaleNote = n;
+                    //Console.Write(n);
+                }
+
+                // "C#/Db"
+                if (needsPair)
+                {
+                    string n = string.Format("{0}{1}/{2}{3} ",
+                        note, new string('#', nbSharps+1),
+                        nextNote, new string('b', nbFlats + 1));
+
+                    scaleSteps[idxScaleStep++].ScaleNote = n;
+                    //Console.Write(n);
+                }
+
+                // flats
+                for (int flats = nbSharps; flats > 0; flats--)
+                {
+                    string n = string.Format("{0}{1} ", nextNote, new string('b', flats));
+
+                    scaleSteps[idxScaleStep++].ScaleNote = n;
+                    //Console.Write(n);
+                }
+            }
+
+            scaleSteps[idxScaleStep++].ScaleNote = "C";
+
+            //Console.WriteLine("C");
         }
     }
 }
