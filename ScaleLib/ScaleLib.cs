@@ -218,6 +218,20 @@ namespace ScaleLib
             }
         }
 
+        public void ShowPlacedIntervals()
+        {
+            for (int i = 0; i < scaleSteps.Length; i++)
+            {
+                var step = scaleSteps[i];
+                if (step.Ratio != null)
+                {
+                    Console.Write("{0}\t", step.Ratio.Interval);
+                    Console.Write("{0}\t", step.Ratio);
+                    Console.Write("{0:F2}\t", step.Ratio.Cents);
+                    Console.WriteLine("{0:F2}", step.DiffJust);
+                }
+            }
+        }
 
         public virtual void Show()
         {

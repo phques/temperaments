@@ -24,6 +24,7 @@ namespace EDOgen
     class EDO : Scale
     {
         private readonly double refFrequency = 0;
+        internal bool OutputCents = false;
 
         public EDO(int nbSteps, double refFrequency) : base(nbSteps)
         {
@@ -40,7 +41,10 @@ namespace EDOgen
                 double freq = refFrequency * Math.Pow(a, i);
                 double cents = 1200.0 / nbSteps * i;
 
-                    scaleSteps[i] = new ScaleStep(i, cents, freq);
+                scaleSteps[i] = new ScaleStep(i, cents, freq);
+
+                if (OutputCents)
+                    Console.WriteLine("{0:F2}", cents);
             }
         }
 
@@ -51,35 +55,29 @@ namespace EDOgen
         static void Main(string[] args)
         {
             const double C4 = 248.30;
+            int nbSteps = 0;
+            bool justOutputCents = false;
+            bool justPlacedIntervals = false;
 
-            //## test debug
-#if false 
-            EDO edot = new EDO(12, C4);
-            edot.Generate();
-            edot.PlaceRatios();
-            edot.CreateScaleNotes();
-
-            edot = new EDO(19, C4);
-            edot.Generate();
-            edot.PlaceRatios();
-            edot.CreateScaleNotes();
-
-            edot = new EDO(31, C4);
-            edot.Generate();
-            edot.PlaceRatios();
-            edot.CreateScaleNotes();
-
-            edot = new EDO(41, C4);
-            edot.Generate();
-            edot.PlaceRatios();
-            edot.CreateScaleNotes();
-
-            return;
-#endif
-
-            if (args.Length != 1 || !int.TryParse(args[0], out int nbSteps))
+            if (args.Length == 1 || (args.Length == 2 && (args[1] == "cents" || args[1] == "placed")))
             {
-                Console.WriteLine("paramter: nbr of steps of the EDO scale to generate");
+                if (!int.TryParse(args[0], out nbSteps))
+                {
+                    Console.WriteLine("paramter: nbr of steps of the EDO scale to generate ['cents' | 'placed']");
+                    return;
+                }
+
+                if (args.Length == 2)
+                {
+                    if (args[1] == "cents")
+                        justOutputCents = true;
+                    else
+                        justPlacedIntervals = true;
+                }
+            }
+            else
+            {
+                Console.WriteLine("paramter: nbr of steps of the EDO scale to generate ['cents'  | 'placed']");
                 return;
             }
 
@@ -87,11 +85,17 @@ namespace EDOgen
             //Console.WriteLine("generating EDO {0} @ C4", nbSteps);
 
             EDO edo = new EDO(nbSteps, C4);
-
+            edo.OutputCents = justOutputCents;
             edo.Generate();
-            edo.PlaceRatios();
-            edo.CreateScaleNotes();
-            edo.Show();
+            if (!justOutputCents)
+            {
+                edo.PlaceRatios();
+                edo.CreateScaleNotes();
+                if (justPlacedIntervals)
+                    edo.ShowPlacedIntervals();
+                else
+                    edo.Show();
+            }
         }
     }
 }
